@@ -54,4 +54,4 @@ You can define your own units. We can get frames per second by defining frames.
 >>> fps
 60.0 f/s
 </code>
-</python>
+</pre>
