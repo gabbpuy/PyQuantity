@@ -45,6 +45,8 @@ class BitField:
 
         :param index: Index of the bit to retrieve
         """
+        if isinstance(index, slice):
+            return self.__getslice__(index)
         return (self.__value >> index) & 1
 
     def __setitem__(self, index, value):
@@ -54,13 +56,15 @@ class BitField:
         :param index: Bit to set
         :param value: Value to set (will be masked to a single bit)
         """
+        if isinstance(index, slice):
+            return self.__setslice__(index, value)
         value = (value & 1) << index
         mask = ~(1 << index)
         self.__value = (self.__value & mask) | value
 
-    def __getslice__(self, start, end=BIT_LENGTH):
+    def __getslice__(self, start_end):
         """
-        Get a bit range, 0 indexed, not including the end index, exactly
+        Get a bit start_end, 0 indexed, not including the end index, exactly
         like a python list, so a[0:8] gives 8 bits in total... 0-7.
         Bit ranges are shifted down
 
@@ -68,6 +72,7 @@ class BitField:
         :param end: End index
         :returns: integer masked to length bits.
         """
+        start, end = start_end.start, start_end.stop
         # mask = 2 ** (end - start + 1)
         # But we want to allow x[:-1] e.g.
         if end > self.BIT_LENGTH:
@@ -80,15 +85,16 @@ class BitField:
         mask = self.bits[end - start - 1]
         return (self.__value >> start) & mask
 
-    def __setslice__(self, start, end, value):
+    def __setslice__(self, start_end, value):
         """
-        Set a bit range, 0 indexed, not including the end index, exactly
+        Set a bit start_end, 0 indexed, not including the end index, exactly
         like a python list, so a[0:8] sets bits 0 - 7.
 
         :param start: Start index
         :param end: End index
         :param value: Value to set (will be masked to correct number of bits)
         """
+        start, end = start_end.start, start_end.stop
         if end < 0:
             end += self.BIT_LENGTH
 
@@ -164,7 +170,7 @@ class BitField:
         """
         return other * self.__value
 
-    def __div__(self, other):
+    def __truediv__(self, other):
         """
         Divide ourselves with another numeric object
         """
@@ -188,7 +194,7 @@ class BitField:
         """
         return "<BitField: {}>".format(self.__str__())
 
-    def asWords(self, nWords, wordLen=16, offset=0):
+    def as_words(self, nWords, wordLen=16, offset=0):
         """
         Return this as a series of 16 bit values
 
@@ -197,9 +203,9 @@ class BitField:
         :param offset: Start at this bit offset into the current bitfield
         :return: List of words of `wordLen` bits
         """
-        return list(self.asWordGen(nWords, wordLen, offset))
+        return list(self.as_words(nWords, wordLen, offset))
 
-    def asWordGen(self, nWords, wordLen=16, offset=0):
+    def as_words_generator(self, nWords, wordLen=16, offset=0):
         """
         Generator to return this as a series of `wordLen` bit values
 
@@ -208,9 +214,9 @@ class BitField:
         :param offset: Start at this bit offset into the current bitfield
         :return: Generator of words of `wordLen` bits
         """
-        return (self[o:o + wordLen] for o in xrange(offset, offset + (nWords * wordLen), wordLen))
+        return (self[o:o + wordLen] for o in range(offset, offset + (nWords * wordLen), wordLen))
 
-    def fromWordSet(self, words, wordLen=16, offset=0):
+    def from_word_set(self, words, wordLen=16, offset=0):
         """
         Extend the bit field from a word bucket
 
@@ -218,5 +224,5 @@ class BitField:
         :param wordLen: Length of items in bits
         :param offset: Start at this bit offset into the current bitfield
         """
-        for w, s in zip(words, xrange(offset, offset + len(words) * wordLen, wordLen)):
+        for w, s in zip(words, range(offset, offset + len(words) * wordLen, wordLen)):
             self[s:s + wordLen] = w
