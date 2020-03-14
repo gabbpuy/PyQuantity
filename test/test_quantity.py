@@ -1,38 +1,35 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-import PyQuantity.Unit as Unit
-import PyQuantity.Prefix as Prefix
-import PyQuantity.Quantity as Quantity
-
-Prefixes = Prefix.Prefixes
-Units = Unit.Units
+import quantity.unit.units as units
+import quantity.prefix.prefixes as prefixes
+import quantity.quantity as quantity
 
 
 class TestQuantity(unittest.TestCase):
 
     def testSimpleQuantity(self):
-        v = Quantity.Quantity(3)
+        v = quantity.Quantity(3)
         assert v == 3
 
-        y = Quantity.Quantity(3)
+        y = quantity.Quantity(3)
         assert v == y
 
-        z = Quantity.Quantity(4)
+        z = quantity.Quantity(4)
         assert z != y
         assert v < z
         assert z > v
         assert y >= v
         assert v <= y
 
-        v = Quantity.Quantity(3, prefix = Prefixes.kilo)
+        v = quantity.Quantity(3, prefix=prefixes.kilo)
         assert v != y
         assert v == 3000
         assert v != 3
 
     def testQuantityMath(self):
-        a = Quantity.Quantity(3)
-        b = Quantity.Quantity(4)
+        a = quantity.Quantity(3)
+        b = quantity.Quantity(4)
 
         c = a + b
         assert c == 7
@@ -53,10 +50,10 @@ class TestQuantity(unittest.TestCase):
         assert a - b != b - a
 
     def testQuantityUnits(self):
-        v10 = Quantity.Quantity(10, 'V')
-        a10 = Quantity.Quantity(10, 'A')
-        a20 = Quantity.Quantity(20, 'A')
-        v10_2 = Quantity.Quantity(10, 'V')
+        v10 = quantity.Quantity(10, 'V')
+        a10 = quantity.Quantity(10, 'A')
+        a20 = quantity.Quantity(20, 'A')
+        v10_2 = quantity.Quantity(10, 'V')
 
         # Different units don't equal each other
         assert v10 != a10, (v10, a10)
@@ -65,23 +62,23 @@ class TestQuantity(unittest.TestCase):
         assert v10 == v10_2
 
     def testQuantityUnitMath(self):
-        a = Quantity.Quantity(10, 'V')
-        b = Quantity.Quantity(10, 'A')
+        a = quantity.Quantity(10, 'V')
+        b = quantity.Quantity(10, 'A')
 
         # This should make a new value with new units (Watts)
         c = a * b
 
         # Can we compare against a string unit
-        assert c == Quantity.Quantity(100, 'W'), (c,)
+        assert c == quantity.Quantity(100, 'W'), (c,)
 
         # Can we compare against the explicit unit
-        assert c == Quantity.Quantity(100, Units.watt)
+        assert c == quantity.Quantity(100, units.watt)
 
         # It should commute
         assert a * b == b * a
 
-        # Same Units
-        d = Quantity.Quantity(50, 'W')
+        # Same units
+        d = quantity.Quantity(50, 'W')
         assert d < c
         assert d <= c
         assert c > d
@@ -106,15 +103,15 @@ class TestQuantity(unittest.TestCase):
 
     def testQuantityPrefixUnit(self):
         # 3 megavolts
-        mv3 = Quantity.Quantity(3, 'MV')
+        mv3 = quantity.Quantity(3, 'MV')
         assert mv3.amount == 3.0
-        assert mv3.unit is Units.volt
-        assert mv3.prefix is Prefixes.mega, (mv3.prefix, Prefixes.mega)
+        assert mv3.unit is units.volt
+        assert mv3.prefix is prefixes.mega, (mv3.prefix, prefixes.mega)
 
         # 3000 kilovolts should really be 3 megavolts
-        mv3_2 = Quantity.Quantity(3, 'kV', Prefixes.kilo)
+        mv3_2 = quantity.Quantity(3, 'kV', prefixes.kilo)
         assert mv3_2.amount == 3.0
-        assert mv3_2.prefix is Prefixes.mega
+        assert mv3_2.prefix is prefixes.mega
 
         # And they should be equal
         assert mv3 == mv3_2

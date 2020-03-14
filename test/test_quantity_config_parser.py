@@ -2,7 +2,7 @@
 import os
 import unittest
 
-from PyQuantity.QuantityConfigParser import QuantityConfigParser
+from quantity.quantity_config_parser import QuantityConfigParser
 
 here = os.path.dirname(__file__)
 
@@ -12,12 +12,11 @@ class TestQuantityConfigParser(unittest.TestCase):
     Test Quantity Config Parser
     """
 
-
     def setUp(self):
-        fp = open(os.path.join(here, 'TestData', 'Test.ini'), 'rb')
-        qcp = QuantityConfigParser()
-        qcp.readfp(fp)
-        self.qcp = qcp
+        with open(os.path.join(here, 'TestData', 'Test.ini'), 'rt', encoding='utf-8') as fp:
+            qcp = QuantityConfigParser()
+            qcp.read_file(fp)
+            self.qcp = qcp
 
     def testGetInt(self):
         """
@@ -51,10 +50,10 @@ class TestQuantityConfigParser(unittest.TestCase):
         Testing items with no qualifiers
         """
         v = self.qcp.getint('NoUnits', 'value1')
-        assert v == -5.0, (v)
+        assert v == -5.0, (v,)
 
         v = self.qcp.getint('NoUnits', 'value2')
-        assert v == 0, (v)
+        assert v == 0, (v,)
 
     def testGetHex(self):
         """

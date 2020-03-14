@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 __author__ = "akm"
 
-import PyQuantity.Unit as Unit
-import PyQuantity.Prefix as Prefix
+from quantity.unit.unit import Unit, get_unit, has_unit
+from quantity.prefix.prefix import closest_prefix, has_prefix, get_prefix
+import quantity.prefix.prefixes as prefixes
+import quantity.unit.units as units
 
-Units = Unit.Units
-NO_UNIT = Units.NoUnit
+NO_UNIT = units.NoUnit
 
 
 class Quantity(object):
@@ -31,7 +32,7 @@ class Quantity(object):
 
     You can define your own units. We can get frames per second by defining frames.
 
-    >>> frame = Unit.Unit('f', "frame")
+    >>> frame = Unit('f', "frame")
     >>> frames = Quantity(432000, "frame")
     >>> runningTime = Quantity(120 * 60, 's')
     >>> fps = frames / runningTime
@@ -43,26 +44,23 @@ class Quantity(object):
     :param prefix: A SI power prefix to be applied to the amount.
     """
 
-    def __init__(self, amount, unit = NO_UNIT, prefix = Prefix.Prefixes.NoPrefix):
+    def __init__(self, amount, unit=NO_UNIT, prefix=prefixes.NoPrefix):
         self.amount = amount
         self.unit = unit
         self.prefix = prefix
-        self._reduceSelf()
+        self._reduce_self()
 
     def __int__(self):
         return int((self.amount * self.prefix) + 0.5)
-
-    def __long__(self):
-        return long((self.amount * self.prefix) + 0.5)
 
     def __float__(self):
         return float(self.amount * self.prefix)
 
     def __add__(self, o):
-        if isinstance(o, (int, long, float)) and o == 0:
+        if isinstance(o, (int, int, float)) and o == 0:
             return self
 
-        if self.unit is NO_UNIT and isinstance(o, (int, long, float)):
+        if self.unit is NO_UNIT and isinstance(o, (int, int, float)):
             return Quantity(type(o)(self) + o)
 
         unit = self.unit + o.unit
@@ -71,7 +69,7 @@ class Quantity(object):
     __radd__ = __add__
 
     def __sub__(self, o):
-        if self.unit is NO_UNIT and isinstance(o, (int, long, float)):
+        if self.unit is NO_UNIT and isinstance(o, (int, int, float)):
             return Quantity(type(o)(self) - o)
 
         unit = self.unit - o.unit
@@ -87,7 +85,7 @@ class Quantity(object):
 
     __rmul__ = __mul__
 
-    def __div__(self, o):
+    def __truediv__(self, o):
         if isinstance(o, Quantity):
             unit = self.unit / o.unit
             return Quantity(float(self) / float(o), unit)
@@ -95,22 +93,22 @@ class Quantity(object):
         unit = self.unit
         return Quantity(type(o)(self) / o, unit)
 
-    def _reduceSelf(self):
+    def _reduce_self(self):
         """
         Parse our unit and reduce ourselves to the smallest representation
         """
-        if isinstance(self.unit, basestring):
-            self.unit = self.__findUnit()
+        if isinstance(self.unit, str):
+            self.unit = self.__find_unit()
         a = self.amount * self.prefix
-        self.amount, self.prefix = Prefix.closestPrefix(a)
+        self.amount, self.prefix = closest_prefix(a)
 
-    def _stripUnit(self):
+    def _strip_unit(self):
         """
         Remove our unit type
         """
         self.unit = NO_UNIT
 
-    def __findUnit(self):
+    def __find_unit(self):
         """
         Take a string like kV and work out prefix and units, obviously
         there is scope for collision between units and prefixes...
@@ -120,12 +118,12 @@ class Quantity(object):
         if not self.unit:
             return NO_UNIT
 
-        if isinstance(self.unit, Unit.Unit):
+        if isinstance(self.unit, Unit):
             return self.unit
 
         u = self.unit
-        if Unit.hasUnit(u):
-            return Unit.getUnit(u)
+        if has_unit(u):
+            return get_unit(u)
 
         # Work backwards through the list trying to find a unit that matches
         unit = self.unit = None
@@ -134,21 +132,21 @@ class Quantity(object):
 
         while ul:
             u = (ul.pop() + u)
-            if Unit.hasUnit(u):
-                unit = Unit.getUnit(u)
+            if has_unit(u):
+                unit = get_unit(u)
                 break
 
         # Nothing left to look at
         if not ul:
             if not unit:
                 # Make a temporary unit, since we don't know what this is
-                unit = Unit.Unit(u, u, True)
+                unit = unit.Unit(u, u, temp=True)
             return unit
 
         # We have left overs... this should be a prefix...
         ul = ''.join(ul)
-        if Prefix.hasPrefix(ul):
-            self.amount *= Prefix.getPrefix(ul)
+        if has_prefix(ul):
+            self.amount *= get_prefix(ul)
         return unit
 
     def __repr__(self):
@@ -167,7 +165,7 @@ class Quantity(object):
 
         Otherwise everything else has to match
         """
-        if self.unit is NO_UNIT and isinstance(other, (int, float, long)):
+        if self.unit is NO_UNIT and isinstance(other, (int, float, int)):
             return type(other)(self) == other
 
         return (other.amount == self.amount and
@@ -178,28 +176,28 @@ class Quantity(object):
         return not (other == self)
 
     def __lt__(self, other):
-        if self.unit is NO_UNIT and isinstance(other, (int, float, long)):
+        if self.unit is NO_UNIT and isinstance(other, (int, float, int)):
             return type(other)(self) > other
 
         assert other.unit is self.unit and other.prefix is self.prefix
         return self.amount < other.amount
 
     def __le__(self, other):
-        if self.unit is NO_UNIT and isinstance(other, (int, float, long)):
+        if self.unit is NO_UNIT and isinstance(other, (int, float, int)):
             return type(other)(self) <= other
 
         assert other.unit is self.unit and other.prefix is self.prefix
         return self.amount <= other.amount
 
     def __gt__(self, other):
-        if self.unit is NO_UNIT and isinstance(other, (int, float, long)):
+        if self.unit is NO_UNIT and isinstance(other, (int, float, int)):
             return type(other)(self) > other
 
         assert other.unit is self.unit and other.prefix is self.prefix
         return self.amount > other.amount
 
     def __ge__(self, other):
-        if self.unit is NO_UNIT and isinstance(other, (int, float, long)):
+        if self.unit is NO_UNIT and isinstance(other, (int, float, int)):
             return type(other)(self) >= other
 
         assert other.unit is self.unit and other.prefix is self.prefix
@@ -228,7 +226,7 @@ class Quantity(object):
         if prefix.endswith(self.unit.unit):
             prefix = prefix[:-len(self.unit.unit)]
 
-        if Prefix.hasPrefix(prefix):
-            return int(self) / Prefix.getPrefix(prefix)
+        if has_prefix(prefix):
+            return int(self) / get_prefix(prefix)
 
         return None

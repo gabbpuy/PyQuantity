@@ -21,7 +21,7 @@ Numbers as BitField, this class is useful on its own, it is very useful as a sup
 __author__ = "akm"
 
 
-class BitField(object):
+class BitField:
     """
     Represents an arbitrary length bit field as a sliceable value
 
@@ -30,13 +30,13 @@ class BitField(object):
 
     :param value: Initial value
     """
-    __slots__ = ('__value', 'bits')
+    __slots__ = ('__value',)
 
     # pre-make bit masks to speed up slicing and dicing
     BIT_LENGTH = 1280
-    bits = [((1 << (i + 1)) - 1) for i in xrange(BIT_LENGTH)]
+    bits = [((1 << (i + 1)) - 1) for i in range(BIT_LENGTH)]
 
-    def __init__(self, value = 0):
+    def __init__(self, value=0):
         self.__value = value
 
     def __getitem__(self, index):
@@ -54,11 +54,11 @@ class BitField(object):
         :param index: Bit to set
         :param value: Value to set (will be masked to a single bit)
         """
-        value = (value & 1L) << index
-        mask = ~(1L << index)
+        value = (value & 1) << index
+        mask = ~(1 << index)
         self.__value = (self.__value & mask) | value
 
-    def __getslice__(self, start, end = BIT_LENGTH):
+    def __getslice__(self, start, end=BIT_LENGTH):
         """
         Get a bit range, 0 indexed, not including the end index, exactly
         like a python list, so a[0:8] gives 8 bits in total... 0-7.
@@ -94,7 +94,7 @@ class BitField(object):
 
         mask = self.bits[end - start - 1]
         value = (value & mask) << start
-        mask = mask << start
+        mask <<= start
         self.__value = (self.__value & ~mask) | value
         return (self.__value >> start) & mask
 
@@ -188,7 +188,7 @@ class BitField(object):
         """
         return "<BitField: {}>".format(self.__str__())
 
-    def asWords(self, nWords, wordLen = 16, offset = 0):
+    def asWords(self, nWords, wordLen=16, offset=0):
         """
         Return this as a series of 16 bit values
 
@@ -199,18 +199,18 @@ class BitField(object):
         """
         return list(self.asWordGen(nWords, wordLen, offset))
 
-    def asWordGen(self, nWords, wordLen = 16, offset = 0):
+    def asWordGen(self, nWords, wordLen=16, offset=0):
         """
         Generator to return this as a series of `wordLen` bit values
 
         :param nWords: Return this many words
         :param wordLen: Length of items in bits
         :param offset: Start at this bit offset into the current bitfield
-        :param return: Generator of words of `wordLen` bits
+        :return: Generator of words of `wordLen` bits
         """
         return (self[o:o + wordLen] for o in xrange(offset, offset + (nWords * wordLen), wordLen))
 
-    def fromWordSet(self, words, wordLen = 16, offset = 0):
+    def fromWordSet(self, words, wordLen=16, offset=0):
         """
         Extend the bit field from a word bucket
 

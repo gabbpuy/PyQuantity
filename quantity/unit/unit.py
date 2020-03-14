@@ -6,7 +6,6 @@ or divided. There are some lookups for units that can be derived from multiplyin
 
 
 class MetaUnit(type):
-
     unitIndex = {}
     combinedUnits = {}
     dividedUnits = {}
@@ -23,55 +22,7 @@ class MetaUnit(type):
         return obj
 
 
-def getUnits():
-    return MetaUnit.unitIndex.keys()
-
-
-def getAllConversions():
-    return MetaUnit.conversions
-
-
-def getAllDividedUnits():
-    return MetaUnit.dividedUnits
-
-
-def getAllCombinedUnits():
-    return MetaUnit.combinedUnits
-
-
-def getUnit(unitName):
-    return MetaUnit.unitIndex[unitName]
-
-
-def getCombinedUnit(unit):
-    return MetaUnit.combinedUnits[unit]
-
-
-def getConversion(units):
-    return MetaUnit.conversions.get(units)
-
-
-def getDividedUnit(unit):
-    return MetaUnit.dividedUnits[unit]
-
-
-def hasUnit(unitId):
-    return unitId in MetaUnit.unitIndex
-
-
-def hasCombinedUnit(unitId):
-    return unitId in MetaUnit.combinedUnits
-
-
-def hasConversion(units):
-    return units in MetaUnit.conversions
-
-
-def hasDividedUnit(units):
-    return units in MetaUnit.dividedUnits
-
-
-class Unit(object):
+class Unit(metaclass=MetaUnit):
     """
     An SI unit of measure.
 
@@ -79,19 +30,16 @@ class Unit(object):
     :param name: The name of the unit
     :param temp: Is this a temporary unit (created when combining units)
     """
-    __metaclass__ = MetaUnit
 
-    xNames = (u'', u'', u'square ', u'cubic ', u'quartic')
+    xNames = ('', '', 'square ', 'cubic ', 'quartic')
 
     # Unicode superscripts for powers , 0, 1, 2, 3, 4, 5 etc..
-    supers = [unichr(u) for u in
-              (0x2070, 0x00B9, 0x00B2, 0x00B3, 0x2074,
-               0x2075, 0x0076, 0x0077, 0x0078, 0x2079)]
+    supers = '\u2070', '\u00B9', '\u00B2', '\u00B3', '\u2074', '\u2075', '\u0076', '\u0077', '\u0078', '\u2079'
 
     __slots__ = ('unit', 'name', '_unit', 'index', 'xName')
 
     # temp is parsed by the meta class...
-    def __init__(self, unit, name, temp = False):
+    def __init__(self, unit, name, temp=False):
         self.unit = unit
         self._unit = unit
         self.name = name
@@ -119,21 +67,21 @@ class Unit(object):
             unit = self
         elif self._unit != o._unit:
             k = frozenset((o, self))
-            if hasCombinedUnit(k):
-                unit = getCombinedUnit(k)
+            if has_combined_unit(k):
+                unit = get_combined_unit(k)
             else:
                 # Build a temporary unit
                 unit = Unit(u"{0}{1}".format(self.unit, o.unit),
                             u"{0}-{1}".format(self.name, o.name),
-                            True)
+                            temp=True)
         else:
             unit = Unit(self._unit, self.name, True)
             index = self.index + o.index - 1
-            for i in xrange(index):
+            for i in range(index):
                 unit._up()
         return unit
 
-    def __div__(self, o):
+    def __truediv__(self, o):
         """
         Divide two units
         """
@@ -143,18 +91,18 @@ class Unit(object):
         elif unit is not o:
             k = (self, o)
             if self._unit == o._unit:
-                unit = Unit(self._unit, self.name, True)
+                unit = Unit(self._unit, self.name, temp=True)
                 unit.index = self.index + o.index
                 for i in range(self.index - o.index + 1):
                     unit._down()
                 if unit.index == 1:
                     unit = unit._unit
-            elif hasDividedUnit(k):
-                unit = getDividedUnit(k)
+            elif has_divided_unit(k):
+                unit = get_divided_unit(k)
             else:
                 unit = Unit(u"{0}/{1}".format(self.unit, o.unit),
                             u"{0} per {1}".format(self.name, o.name),
-                            True)
+                            temp=True)
         else:
             unit = NoUnit
 
@@ -182,12 +130,12 @@ class Unit(object):
         """
         if self.index > 1:
             if self.index < 10:
-                self.unit = unicode.format(u"{0}{1}", self._unit, self.supers[self.index])
+                self.unit = '{0}{1}'.format(self._unit, self.supers[self.index])
             elif self.index < 100:
                 t, u = divmod(self.index, 10)
-                self.unit = unicode.format(u"{0}{1}{2}", self._unit, self.supers[t], self.supers[u])
+                self.unit = '{0}{1}{2}'.format(self._unit, self.supers[t], self.supers[u])
             else:
-                self.unit = unicode.format(u"{0}^{1}", self._unit, self.index)
+                self.unit = '{0}^{1}'.format(self._unit, self.index)
         else:
             self.unit = self._unit
 
@@ -198,16 +146,13 @@ class Unit(object):
         if 1 <= self.index <= 4:
             self.xName = self.xNames[self.index]
         else:
-            self.xName = u"{0}th ".format(self.index)
+            self.xName = '{0}th '.format(self.index)
 
     def __repr__(self):
-        return unicode.format(u"{0}{1}", self.xName, self.name).encode('utf-8')
+        return '{0}{1}'.format(self.xName, self.name).encode('utf-8')
 
     def __str__(self):
-        return unicode(self.unit).encode('utf-8')
-
-    def __unicode__(self):
-        return self.unit
+        return self.unit.encode('utf-8')
 
     def convert(self, to, value):
         """
@@ -217,7 +162,7 @@ class Unit(object):
         :param value: starting value
         :return: unitless value
         """
-        operations = getConversion((self, to))
+        operations = get_conversion((self, to))
         for operation, v in operations:
             value = operation(value, v)
         return value
@@ -229,3 +174,55 @@ class Unit(object):
 
 # Empty Unit
 NoUnit = Unit.NoUnit()
+
+
+def get_units() -> tuple:
+    """
+    Get all the units
+    :return:
+    """
+    return tuple(MetaUnit.unitIndex.keys())
+
+
+def get_all_conversions() -> dict:
+    return MetaUnit.conversions
+
+
+def get_all_divided_units() -> dict:
+    return MetaUnit.dividedUnits
+
+
+def get_all_combined_units() -> dict:
+    return MetaUnit.combinedUnits
+
+
+def get_unit(unitName) -> Unit:
+    return MetaUnit.unitIndex[unitName]
+
+
+def get_combined_unit(unit) -> Unit:
+    return MetaUnit.combinedUnits[unit]
+
+
+def get_conversion(units):
+    return MetaUnit.conversions.get(units)
+
+
+def get_divided_unit(unit) -> Unit:
+    return MetaUnit.dividedUnits[unit]
+
+
+def has_unit(unit_id: str) -> bool:
+    return unit_id in MetaUnit.unitIndex
+
+
+def has_combined_unit(unit_id) -> bool:
+    return unit_id in MetaUnit.combinedUnits
+
+
+def has_conversion(units) -> bool:
+    return units in MetaUnit.conversions
+
+
+def has_divided_unit(units) -> bool:
+    return units in MetaUnit.dividedUnits

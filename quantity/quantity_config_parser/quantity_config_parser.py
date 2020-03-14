@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 from functools import partial
-from ConfigParser import SafeConfigParser
+from configparser import ConfigParser
 
-import PyQuantity.Quantity as Quantity
-import PyQuantity.Unit as Unit
-Units = Unit.Units
+from quantity.quantity import Quantity
+import quantity.unit.units as Units
 
-_hex = partial(int, base = 16)
+_hex = partial(int, base=16)
 
 
-class QuantityConfigParser(SafeConfigParser):
+class QuantityConfigParser(ConfigParser):
     """
     A :mod:`SafeConfigParser` derivative that returns quantities
     """
@@ -24,7 +23,7 @@ class QuantityConfigParser(SafeConfigParser):
         :param unit: The SI quantifier ('s', 'km')
         :returns: A :mod:`Quantity` object
         """
-        return Quantity.Quantity(converter(value), unit)
+        return Quantity(converter(value), unit)
 
     def _splitSectionItem(self, section, option):
         """
@@ -52,7 +51,7 @@ class QuantityConfigParser(SafeConfigParser):
         value, unit = self._splitSectionItem(section, option)
         return self.__quantify(converter, value, unit)
 
-    def getint(self, section, option, converter = int):
+    def getint(self, section, option, converter=int):
         """
         A convenience method which coerces the option in the specified
         section to an integer :mod:`Quantity`
@@ -64,7 +63,7 @@ class QuantityConfigParser(SafeConfigParser):
         """
         return self.getAs(section, option, converter)
 
-    def gethex(self, section, option, converter = _hex):
+    def gethex(self, section, option, converter=_hex):
         """
         A convenience method which coerces the option in the specified
         section to an integer :mod:`Quantity` from a hex input. Values
@@ -77,7 +76,7 @@ class QuantityConfigParser(SafeConfigParser):
         """
         return self.getAs(section, option, converter)
 
-    def getfloat(self, section, option, converter = float):
+    def getfloat(self, section, option, converter=float):
         """
         A convenience method which coerces the option in the specified
         section to a float :mod:`Quantity`

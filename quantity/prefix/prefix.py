@@ -8,53 +8,53 @@ import math
 
 
 class MetaPrefix(type):
-    powerIndex = {}
-    prefixIndex = {}
+    power_index = {}
+    prefix_index = {}
 
     def __call__(cls, *args, **kwargs):
         obj = super(MetaPrefix, cls).__call__(*args, **kwargs)
-        MetaPrefix.powerIndex[obj.power] = obj
-        MetaPrefix.prefixIndex[obj.prefix] = obj
+        MetaPrefix.power_index[obj.power] = obj
+        MetaPrefix.prefix_index[obj.prefix] = obj
         return obj
 
 
-def hasPrefix(prefix):
+def has_prefix(prefix):
     """
     Is the prefix in the cache?
     :param prefix: Prefix
     :return: presence of prefix
     """
-    return prefix in MetaPrefix.prefixIndex
+    return prefix in MetaPrefix.prefix_index
 
 
-def hasPower(power):
+def has_power(power):
     """
     Is this power in the cache?
     :param power: Power
     :return: presence of power
     """
-    return power in MetaPrefix.powerIndex
+    return power in MetaPrefix.power_index
 
 
-def getPower(power):
+def get_power(power):
     """
     Get the cached power index
     :param power:
     :return: Cached Power
     """
-    return MetaPrefix.powerIndex[power]
+    return MetaPrefix.power_index[power]
 
 
-def getPrefix(prefix):
+def get_prefix(prefix):
     """
     Get the cached prefix object
     :param prefix: prefix
     :return: Cached prefix
     """
-    return MetaPrefix.prefixIndex[prefix]
+    return MetaPrefix.prefix_index[prefix]
 
 
-class Prefix(object):
+class Prefix(metaclass=MetaPrefix):
     """
     A SI power of 10 prefix.
 
@@ -62,10 +62,7 @@ class Prefix(object):
     :param name: the long form
     :param power: the power of 10 this refers to
     """
-    __metaclass__ = MetaPrefix
-    supers = [unichr(u) for u in
-              [0x2070, 0x00B9, 0x00B2, 0x00B3, 0x2074,
-               0x2075, 0x2076, 0x2077, 0x2078, 0x2079]]
+    supers = '\u2070', '\u00B9', '\u00B2', '\u00B3', '\u2074', '\u2075', '\u2076', '\u2077', '\u2078', '\u2079'
 
     __slots__ = ("prefix", "name", "power", "fmt")
 
@@ -73,9 +70,9 @@ class Prefix(object):
         self.prefix = prefix
         self.name = name
         self.power = power
-        self.fmt = self.generateFormat(power)
+        self.fmt = self.generate_format(power)
 
-    def generateFormat(self, power):
+    def generate_format(self, power):
         """
         Generate the format
 
@@ -108,13 +105,7 @@ class Prefix(object):
         """
         Ascii version
         """
-        return u"{0.prefix}".format(self).encode('utf-8')
-
-    def __unicode__(self):
-        """
-        Unicode version
-        """
-        return self.prefix
+        return "{0.prefix}".format(self).encode('utf-8')
 
     def __rmul__(self, o):
         """
@@ -138,18 +129,18 @@ class Prefix(object):
         return float(o) / (10 ** self.power)
 
 
-def closestPrefix(i):
+def closest_prefix(i):
     """
     Reduce a number to a multiplier and a prefix.
 
-    e.g `closestPrefix(1000)` returns (1.0, kilo)
-    `closestPrefix(1024)` returns (1.024, kilo)
+    e.g `closest_prefix(1000)` returns (1.0, kilo)
+    `closest_prefix(1024)` returns (1.024, kilo)
 
     :param i: the number to index
     :returns: a (coefficient, :mod:`Prefix`) tuple.
     """
     if i == 0:
-        return 0, getPower(0)
+        return 0, get_power(0)
 
     coefficient = abs(float(i))
 
@@ -160,7 +151,7 @@ def closestPrefix(i):
     exponent = int(math.floor(math.log(coefficient, 10) + 0.5))
     coefficient /= 10 ** exponent
 
-    indices = sorted(MetaPrefix.powerIndex.keys())
+    indices = sorted(MetaPrefix.power_index.keys())
 
     for j, i in enumerate(indices):
         if i >= exponent:
@@ -169,5 +160,5 @@ def closestPrefix(i):
                 delta = exponent - i
                 coefficient *= 10 ** delta
             break
-    exponent = getPower(i)
+    exponent = get_power(i)
     return coefficient * mult, exponent

@@ -26,67 +26,67 @@ __author__ = 'akm'
 
 import operator
 
-from .Unit import NoUnit, Unit, getAllConversions, getAllDividedUnits, getAllCombinedUnits
+from .unit import NoUnit, Unit, get_all_conversions, get_all_divided_units, get_all_combined_units
 
 # SI Base units
-metre = Unit(u'm', u"metre")           # : SI metre
+metre = Unit('m', "metre")  # : SI metre
 # Replace kilogramme with gramme because kg is a special case
 # kilogramme = Unit.Unit('kg', 'kilogramme')
-gramme = Unit(u'g', u"gramme")         # : SI grammes
-second = Unit(u's', u"second")         # : SI seconds
-ampere = Unit(u'A', u"ampere")         # : SI amperes
-kelvin = Unit(u'K', u"kelvin")         # : SI kelvin
-celsius = Unit(u"\u00b0C", u"celsius") # : SI celsius
-mole = Unit(u"mol", u"mole")           # : SI mole
-candela = Unit(u"cd", u"candela")      # : SI candela
-steradian = Unit(u"sr", u"steradian")  # : SI steradian
-radian = Unit(u"rad", u"radian")       # : SI radian
-degree = Unit(u"\u00b0", u"degree")    # : degree of arc
+gramme = Unit('g', "gramme")  # : SI grammes
+second = Unit('s', "second")  # : SI seconds
+ampere = Unit('A', "ampere")  # : SI amperes
+kelvin = Unit('K', "kelvin")  # : SI kelvin
+celsius = Unit("\u00b0C", "celsius")  # : SI celsius
+mole = Unit("mol", "mole")  # : SI mole
+candela = Unit("cd", "candela")  # : SI candela
+steradian = Unit("sr", "steradian")  # : SI steradian
+radian = Unit("rad", "radian")  # : SI radian
+degree = Unit("\u00b0", "degree")  # : degree of arc
 
-hertz = Unit(u"Hz", u"hertz")          # : SI hertz
-newton = Unit(u'N', u"newton")         # : SI newtons
-pascal = Unit(u"Pa", u"pascal")        # : SI pascals
-watt = Unit(u'W', u"watt")             # : SI watts
-joule = Unit(u'J', u"joule")           # : SI joules
-volt = Unit(u'V', u"volt")             # : SI volts
-ohm = Unit(u"\u2126", u"ohm")          # : SI ohms (with omega symbol)
-siemens = Unit(u'S', u"siemens")       # : SI siemens
-coulomb = Unit(u'C', u"coulomb")       # : SI coulombs
-farad = Unit(u'F', u"farad")           # : SI farads
-weber = Unit(u"wb", u"weber")          # : SI weber
-tesla = Unit(u"T", u"tesla")           # : SI tesla
-henry = Unit(u'H', u"henry")           # : SI henrys
-lumen = Unit(u"lm", u"lumen")          # : SI lumens
-lux = Unit(u"lx", u"lux")              # : SI lux
-becquerel = Unit(u"Bq", u"becquerel")  # : SI becquerel
-gray = Unit(u"Gy", u"gray")            # : SI grays
-sievert = Unit(u"Sv", u"sievert")      # : SI sieverts
-katal = Unit(u"kat", u"katal")         # : SI katal
+hertz = Unit("Hz", "hertz")  # : SI hertz
+newton = Unit('N', "newton")  # : SI newtons
+pascal = Unit("Pa", "pascal")  # : SI pascals
+watt = Unit('W', "watt")  # : SI watts
+joule = Unit('J', "joule")  # : SI joules
+volt = Unit('V', "volt")  # : SI volts
+ohm = Unit("\u2126", "ohm")  # : SI ohms (with omega symbol)
+siemens = Unit('S', "siemens")  # : SI siemens
+coulomb = Unit('C', "coulomb")  # : SI coulombs
+farad = Unit('F', "farad")  # : SI farads
+weber = Unit("wb", "weber")  # : SI weber
+tesla = Unit("T", "tesla")  # : SI tesla
+henry = Unit('H', "henry")  # : SI henrys
+lumen = Unit("lm", "lumen")  # : SI lumens
+lux = Unit("lx", "lux")  # : SI lux
+becquerel = Unit("Bq", "becquerel")  # : SI becquerel
+gray = Unit("Gy", "gray")  # : SI grays
+sievert = Unit("Sv", "sievert")  # : SI sieverts
+katal = Unit("kat", "katal")  # : SI katal
 
-bit = Unit(u'b', u"bit")
-byte = Unit(u'B', u"Byte")
+bit = Unit('b', "bit")
+byte = Unit('B', "Byte")
 
 # Non-English english aliases
 meter = metre  #: SI alias for metre
 gram = gramme  #: SI alias for gramme
 
 # Imperial measurements
-fahrenheit = Unit(u"\u00b0F", u"fahrenheit") # degrees fahrenheit
-inch = Unit(u'"', u"inch")    # inch
-foot = Unit(u"'", u"foot")    # foot
-mile = Unit(u"mile", u"mile") # mile
-pound = Unit(u"lb", u"pound") # pound
-ounce = Unit(u"oz", u"ounce") # ounce
+fahrenheit = Unit("\u00b0F", "fahrenheit")  # degrees fahrenheit
+inch = Unit('"', "inch")  # inch
+foot = Unit("'", "foot")  # foot
+mile = Unit("mile", "mile")  # mile
+pound = Unit("lb", "pound")  # pound
+ounce = Unit("oz", "ounce")  # ounce
 
-## Convenience conversions
-minute = Unit(u"min", u"minute")
-hour = Unit(u"hour", u"hour")
+# Convenience conversions
+minute = Unit("min", "minute")
+hour = Unit("hour", "hour")
 
 # One unit times another
 # frozenset allows us to have commutative keys instead of doubling up each
 # combination, so Amps * Volts and Volts * Amps both work off the same key
 k = frozenset
-getAllCombinedUnits().update({
+get_all_combined_units().update({
     k((ampere, volt)): watt,
     k((ohm, ampere)): volt,
     k((second, ampere)): coulomb,
@@ -94,8 +94,7 @@ getAllCombinedUnits().update({
     k((coulomb, volt)): joule,
     k((candela, steradian)): lumen,
     k((ohm, second)): henry,
-
-##	k((metre, Newton))  : Joule, # or Newton-metres ...
+    # k((metre, Newton))  : Joule, # or Newton-metres ...
 })
 
 # NB: we can only do pairs, and these are processed left to right.
@@ -117,7 +116,7 @@ getAllCombinedUnits().update({
 # One unit divided by another
 # tuples for keys means order is important for the key (which we want)
 # See note above about order importance for creating the units you want.
-getAllDividedUnits().update({
+get_all_divided_units().update({
     (watt, ampere): volt,
     (joule, coulomb): volt,
     (coulomb, volt): farad,
@@ -135,33 +134,34 @@ getAllDividedUnits().update({
     (mole, second): katal
 })
 
-getAllConversions().update({
+get_all_conversions().update({
     (celsius, kelvin): ((operator.add, 273.15),),
     (kelvin, celsius): ((operator.sub, 273.15),),
-    (celsius, fahrenheit): ((operator.mul, 9.0), (operator.div, 5.0), (operator.add, 32.0)),
-    (fahrenheit, celsius): ((operator.sub, 32.0), (operator.mul, 5.0), (operator.div, 9.0)),
+    # You can chain operators...
+    (celsius, fahrenheit): ((operator.mul, 9.0), (operator.truediv, 5.0), (operator.add, 32.0)),
+    (fahrenheit, celsius): ((operator.sub, 32.0), (operator.mul, 5.0), (operator.truediv, 9.0)),
     (second, minute): ((operator.mul, 60.0),),
-    (minute, second): ((operator.div, 60.0),),
+    (minute, second): ((operator.truediv, 60.0),),
     (second, hour): ((operator.mul, 3600.0),),
-    (hour, second): ((operator.div, 3600.0),),
+    (hour, second): ((operator.truediv, 3600.0),),
     (minute, hour): ((operator.mul, 60.0),),
-    (hour, minute): ((operator.div, 60.0),),
-    (inch, foot): ((operator.div, 12.0),),
+    (hour, minute): ((operator.truediv, 60.0),),
+    (inch, foot): ((operator.truediv, 12.0),),
     (foot, inch): ((operator.mul, 12.0),),
     (inch, metre): ((operator.mul, 0.0254),),
     (metre, inch): ((operator.mul, 39.3701),),
     (foot, metre): ((operator.mul, 0.3048),),
     (metre, foot): ((operator.mul, 3.28084),),
     (mile, foot): ((operator.mul, 5280.0),),
-    (foot, mile): ((operator.div, 5280.0),),
+    (foot, mile): ((operator.truediv, 5280.0),),
     (mile, metre): ((operator.mul, 1609.34),),
-    (metre, mile): ((operator.div, 1609.34),),
+    (metre, mile): ((operator.truediv, 1609.34),),
     (pound, gramme): ((operator.mul, 453.592),),
     (gramme, pound): ((operator.mul, 0.00220462),),
     (gramme, ounce): ((operator.mul, 0.035274),),
     (ounce, gramme): ((operator.mul, 28.3495),),
-    (ounce, pound): ((operator.div, 16.0),),
+    (ounce, pound): ((operator.truediv, 16.0),),
     (pound, ounce): ((operator.mul, 16.0),),
-    (bit, byte): ((operator.mul, 8.0),),
-    (byte, bit): ((operator.div, 8.0),)
+    (bit, byte): ((operator.truediv, 8.0),),
+    (byte, bit): ((operator.mul, 8.0),)
 })
