@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from functools import partial
 from configparser import ConfigParser
+from typing import Union, Callable
 
 from quantity.quantity import Quantity
 import quantity.unit.units as Units
@@ -14,7 +15,7 @@ class QuantityConfigParser(ConfigParser):
     """
 
     @staticmethod
-    def __quantify(converter, value, unit):
+    def __quantify(converter: Callable, value: Union[float, int], unit: str) -> Quantity:
         """
         Return a type cast quantity
 
@@ -25,7 +26,7 @@ class QuantityConfigParser(ConfigParser):
         """
         return Quantity(converter(value), unit)
 
-    def _splitSectionItem(self, section, option):
+    def _splitSectionItem(self, section: str, option: str) -> tuple:
         """
         Split a config value into value and unit
         :param section: Config section
@@ -40,7 +41,7 @@ class QuantityConfigParser(ConfigParser):
             unit = Units.NoUnit
         return value, unit
 
-    def getAs(self, section, option, converter):
+    def getAs(self, section: str, option: str, converter: Callable) -> Quantity:
         """
         Convert a section to a coerced Quantity
         :param section: Config section
@@ -51,7 +52,7 @@ class QuantityConfigParser(ConfigParser):
         value, unit = self._splitSectionItem(section, option)
         return self.__quantify(converter, value, unit)
 
-    def getint(self, section, option, converter=int):
+    def getint(self, section: str, option: str, converter=int) -> Quantity:
         """
         A convenience method which coerces the option in the specified
         section to an integer :mod:`Quantity`
@@ -63,7 +64,7 @@ class QuantityConfigParser(ConfigParser):
         """
         return self.getAs(section, option, converter)
 
-    def gethex(self, section, option, converter=_hex):
+    def gethex(self, section: str, option: str, converter: Callable = _hex) -> Quantity:
         """
         A convenience method which coerces the option in the specified
         section to an integer :mod:`Quantity` from a hex input. Values
@@ -76,7 +77,7 @@ class QuantityConfigParser(ConfigParser):
         """
         return self.getAs(section, option, converter)
 
-    def getfloat(self, section, option, converter=float):
+    def getfloat(self, section: str, option: str, converter: Callable = float) -> Quantity:
         """
         A convenience method which coerces the option in the specified
         section to a float :mod:`Quantity`

@@ -36,10 +36,10 @@ class BitField:
     BIT_LENGTH = 1280
     bits = [((1 << (i + 1)) - 1) for i in range(BIT_LENGTH)]
 
-    def __init__(self, value=0):
+    def __init__(self, value: int = 0):
         self.__value = value
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> int:
         """
         Get a single bit, 0 indexed
 
@@ -49,7 +49,7 @@ class BitField:
             return self.__getslice__(index)
         return (self.__value >> index) & 1
 
-    def __setitem__(self, index, value):
+    def __setitem__(self, index: int, value: int):
         """
         Set a single bit, 0 indexed
 
@@ -62,14 +62,13 @@ class BitField:
         mask = ~(1 << index)
         self.__value = (self.__value & mask) | value
 
-    def __getslice__(self, start_end):
+    def __getslice__(self, start_end: slice) -> int:
         """
         Get a bit start_end, 0 indexed, not including the end index, exactly
         like a python list, so a[0:8] gives 8 bits in total... 0-7.
         Bit ranges are shifted down
 
-        :param start: Start index
-        :param end: End index
+        :param start_end: Start/end slice
         :returns: integer masked to length bits.
         """
         start, end = start_end.start, start_end.stop
@@ -85,13 +84,12 @@ class BitField:
         mask = self.bits[end - start - 1]
         return (self.__value >> start) & mask
 
-    def __setslice__(self, start_end, value):
+    def __setslice__(self, start_end: slice, value: int):
         """
         Set a bit start_end, 0 indexed, not including the end index, exactly
         like a python list, so a[0:8] sets bits 0 - 7.
 
-        :param start: Start index
-        :param end: End index
+        :param start_end: Start/end slice
         :param value: Value to set (will be masked to correct number of bits)
         """
         start, end = start_end.start, start_end.stop
@@ -104,97 +102,91 @@ class BitField:
         self.__value = (self.__value & ~mask) | value
         return (self.__value >> start) & mask
 
-    def __int__(self):
+    def __int__(self) -> int:
         """
         Cast ourselves to an integer value
         """
         return int(self.__value)
 
-    def __long__(self):
-        """
-        Cast ourselves as a long integer value
-        """
-        return self.__value
-
-    def __or__(self, other):
+    def __or__(self, other) -> int:
         """
         Bitwise or
         """
         return self.__value | other
 
-    def __ror__(self, other):
+    def __ror__(self, other) -> int:
         """
         Bitwise or where we're on the right hand side
         """
         return self.__value | other
 
-    def __and__(self, other):
+    def __and__(self, other) -> int:
         """
         Bitwise and
         """
         return self.__value & other
 
-    def __rand__(self, other):
+    def __rand__(self, other) -> int:
         """
         Bitwise and where we're on the right hand side
         """
         return self.__value & other
 
-    def __add__(self, other):
+    def __add__(self, other) -> int:
         """
         Add ourselves to another numeric type object
         """
         return self.__value + other
 
-    def __radd__(self, other):
+    def __radd__(self, other) -> int:
         """
         Add ourselves to another numeric type object
         """
         return self.__value + other
 
-    def __rsub__(self, other):
+    def __rsub__(self, other) -> int:
         """
         Subtract ourselves from another numeric type object
         """
         return other - self.__value
 
-    def __mul__(self, other):
+    def __mul__(self, other) -> int:
         """
         Multiply ourselves with another numeric object
         """
         return other * self.__value
 
-    def __rmul__(self, other):
+    def __rmul__(self, other) -> int:
         """
         Multiply ourselves with another numeric object
         """
         return other * self.__value
 
-    def __truediv__(self, other):
+    def __truediv__(self, other) -> int:
         """
         Divide ourselves with another numeric object
         """
         return self.__value / other
 
-    def __rdiv__(self, other):
+    def __rtruediv__(self, other) -> int:
         """
         Divide another numeric object with ourselves
         """
         return other / self.__value
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Return hex representation
         """
-        return "{0}".format(hex(self.__value))
+        return f'{hex(self.__value)}'
 
     def __repr__(self):
         """
         Return our representation
         """
-        return "<BitField: {}>".format(self.__str__())
+        return f'<BitField: {self.__str__()}>'
 
-    def as_words(self, nWords, wordLen=16, offset=0):
+    def as_words(self, nWords, wordLen: int = 16, offset: int = 0) -> list:
         """
         Return this as a series of 16 bit values
 
@@ -205,7 +197,7 @@ class BitField:
         """
         return list(self.as_words(nWords, wordLen, offset))
 
-    def as_words_generator(self, nWords, wordLen=16, offset=0):
+    def as_words_generator(self, nWords, wordLen: int = 16, offset: int = 0):
         """
         Generator to return this as a series of `wordLen` bit values
 
@@ -216,7 +208,7 @@ class BitField:
         """
         return (self[o:o + wordLen] for o in range(offset, offset + (nWords * wordLen), wordLen))
 
-    def from_word_set(self, words, wordLen=16, offset=0):
+    def from_word_set(self, words, wordLen: int = 16, offset: int = 0):
         """
         Extend the bit field from a word bucket
 

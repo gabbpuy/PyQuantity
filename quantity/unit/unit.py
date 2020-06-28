@@ -3,6 +3,7 @@
 A class representing a unit of measure. Similar units can be added or subtracted, while any two units can be multiplied
 or divided. There are some lookups for units that can be derived from multiplying or dividing two units.
 """
+from typing import Union
 
 
 class MetaUnit(type):
@@ -34,12 +35,12 @@ class Unit(metaclass=MetaUnit):
     xNames = ('', '', 'square ', 'cubic ', 'quartic')
 
     # Unicode superscripts for powers , 0, 1, 2, 3, 4, 5 etc..
-    supers = '\u2070', '\u00B9', '\u00B2', '\u00B3', '\u2074', '\u2075', '\u0076', '\u0077', '\u0078', '\u2079'
+    supers = ('⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹')
 
     __slots__ = ('unit', 'name', '_unit', 'index', 'xName')
 
     # temp is parsed by the meta class...
-    def __init__(self, unit, name, temp=False):
+    def __init__(self, unit: str, name: str, temp: bool = False):
         self.unit = unit
         self._unit = unit
         self.name = name
@@ -57,7 +58,7 @@ class Unit(metaclass=MetaUnit):
     # XXX mul and div need a new MultiUnit class that takes care of this
     # and can deal with m/s/s actually being m/s² or ms-²
 
-    def __mul__(self, o):
+    def __mul__(self, o: 'Unit') -> 'Unit':
         """
         Multiple two units
         """
@@ -71,8 +72,8 @@ class Unit(metaclass=MetaUnit):
                 unit = get_combined_unit(k)
             else:
                 # Build a temporary unit
-                unit = Unit(u"{0}{1}".format(self.unit, o.unit),
-                            u"{0}-{1}".format(self.name, o.name),
+                unit = Unit(f'{self.unit}{o.unit}',
+                            f'{self.name}-{o.name}',
                             temp=True)
         else:
             unit = Unit(self._unit, self.name, True)
@@ -81,7 +82,7 @@ class Unit(metaclass=MetaUnit):
                 unit._up()
         return unit
 
-    def __truediv__(self, o):
+    def __truediv__(self, o: 'Unit') -> 'Unit':
         """
         Divide two units
         """
@@ -100,8 +101,8 @@ class Unit(metaclass=MetaUnit):
             elif has_divided_unit(k):
                 unit = get_divided_unit(k)
             else:
-                unit = Unit(u"{0}/{1}".format(self.unit, o.unit),
-                            u"{0} per {1}".format(self.name, o.name),
+                unit = Unit(f'{self.unit}/{o.unit}',
+                            f'{self.name} per {o.name}',
                             temp=True)
         else:
             unit = NoUnit
@@ -130,12 +131,12 @@ class Unit(metaclass=MetaUnit):
         """
         if self.index > 1:
             if self.index < 10:
-                self.unit = '{0}{1}'.format(self._unit, self.supers[self.index])
+                self.unit = f'{self._unit}{self.supers[self.index]}'
             elif self.index < 100:
                 t, u = divmod(self.index, 10)
-                self.unit = '{0}{1}{2}'.format(self._unit, self.supers[t], self.supers[u])
+                self.unit = f'{self._unit}{self.supers[t]}{self.supers[u]}'
             else:
-                self.unit = '{0}^{1}'.format(self._unit, self.index)
+                self.unit = f'{self._unit}^{self.index}'
         else:
             self.unit = self._unit
 
@@ -146,15 +147,15 @@ class Unit(metaclass=MetaUnit):
         if 1 <= self.index <= 4:
             self.xName = self.xNames[self.index]
         else:
-            self.xName = '{0}th '.format(self.index)
+            self.xName = f'{self.index}th '
 
-    def __repr__(self):
-        return '{0}{1}'.format(self.xName, self.name).encode('utf-8')
+    def __repr__(self) -> str:
+        return f'{self.xName}{self.name}'
 
-    def __str__(self):
-        return self.unit.encode('utf-8')
+    def __str__(self) -> str:
+        return self.unit
 
-    def convert(self, to, value):
+    def convert(self, to: 'Unit', value: Union[float, int]) -> Union[float, int]:
         """
         Convert from this to another unit
 
@@ -169,7 +170,7 @@ class Unit(metaclass=MetaUnit):
 
     @staticmethod
     def NoUnit():
-        return Unit("", "")
+        return Unit('', '')
 
 
 # Empty Unit

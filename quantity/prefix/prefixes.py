@@ -29,7 +29,7 @@ if not RealWorld:
 milli = Prefix('m', 'milli', -3)       # : SI milli
 micro_ = Prefix('', 'micro', -6)       # : SI micro
 # We want this to be the one, so we do it 2nd so it ends up in the index
-micro = Prefix('\u00B5', 'micro', -6)  # : SI micro (with mu symbol)
+micro = Prefix('µ', 'micro', -6)  # : SI micro (with mu symbol)
 nano = Prefix('n', 'nano', -9)         # : SI nano
 pico = Prefix('p', 'pico', -12)        # : SI pico
 femto = Prefix('f', 'femto', -15)      # : SI femto

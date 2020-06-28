@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 __author__ = "akm"
+from typing import Union, Optional
 
 from quantity.unit.unit import Unit, get_unit, has_unit
-from quantity.prefix.prefix import closest_prefix, has_prefix, get_prefix
+from quantity.prefix.prefix import closest_prefix, has_prefix, get_prefix, Prefix
 import quantity.prefix.prefixes as prefixes
 import quantity.unit.units as units
 
 NO_UNIT = units.NoUnit
 
 
-class Quantity(object):
-    u"""
+class Quantity:
+    """
     A Quantity class. A Quantity is a scalar amount with a unit. This class
     also reduces to SI prefixes like kilo and mega for display, but, can be
     used as a scalar.
@@ -44,23 +45,23 @@ class Quantity(object):
     :param prefix: A SI power prefix to be applied to the amount.
     """
 
-    def __init__(self, amount, unit=NO_UNIT, prefix=prefixes.NoPrefix):
+    def __init__(self, amount, unit: Union[Unit, str] = NO_UNIT, prefix: Prefix = prefixes.NoPrefix):
         self.amount = amount
         self.unit = unit
         self.prefix = prefix
         self._reduce_self()
 
-    def __int__(self):
+    def __int__(self) -> int:
         return int((self.amount * self.prefix) + 0.5)
 
-    def __float__(self):
+    def __float__(self) -> float:
         return float(self.amount * self.prefix)
 
-    def __add__(self, o):
-        if isinstance(o, (int, int, float)) and o == 0:
+    def __add__(self, o) -> 'Quantity':
+        if isinstance(o, (int, float)) and o == 0:
             return self
 
-        if self.unit is NO_UNIT and isinstance(o, (int, int, float)):
+        if self.unit is NO_UNIT and isinstance(o, (int, float)):
             return Quantity(type(o)(self) + o)
 
         unit = self.unit + o.unit
@@ -68,14 +69,14 @@ class Quantity(object):
 
     __radd__ = __add__
 
-    def __sub__(self, o):
-        if self.unit is NO_UNIT and isinstance(o, (int, int, float)):
+    def __sub__(self, o) -> 'Quantity':
+        if self.unit is NO_UNIT and isinstance(o, (int, float)):
             return Quantity(type(o)(self) - o)
 
         unit = self.unit - o.unit
         return Quantity(float(self) - float(o), unit)
 
-    def __mul__(self, o):
+    def __mul__(self, o) -> 'Quantity':
         if isinstance(o, Quantity):
             unit = self.unit * o.unit
             return Quantity(float(self) * float(o), unit)
@@ -85,7 +86,7 @@ class Quantity(object):
 
     __rmul__ = __mul__
 
-    def __truediv__(self, o):
+    def __truediv__(self, o) -> 'Quantity':
         if isinstance(o, Quantity):
             unit = self.unit / o.unit
             return Quantity(float(self) / float(o), unit)
@@ -140,7 +141,7 @@ class Quantity(object):
         if not ul:
             if not unit:
                 # Make a temporary unit, since we don't know what this is
-                unit = unit.Unit(u, u, temp=True)
+                unit = Unit(u, u, temp=True)
             return unit
 
         # We have left overs... this should be a prefix...
@@ -149,16 +150,13 @@ class Quantity(object):
             self.amount *= get_prefix(ul)
         return unit
 
-    def __repr__(self):
-        return u"{0.amount} {0.prefix}{0.unit}".format(self).encode('utf-8')
+    def __repr__(self) -> str:
+        return f'{self.amount} {self.prefix}{self.unit}'
 
-    def __str__(self):
-        return u"{0.amount} {0.prefix}{0.unit}".format(self).encode('utf-8')
+    def __str__(self) -> str:
+        return f'{self.amount} {self.prefix}{self.unit}'
 
-    def __unicode__(self):
-        return u"{0.amount} {0.prefix}{0.unit}".format(self)
-
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         """
         Equivalence checking.
         If we have no unit, then we will compare against scalars.
@@ -172,42 +170,42 @@ class Quantity(object):
                 other.unit is self.unit and
                 other.prefix is self.prefix)
 
-    def __ne__(self, other):
+    def __ne__(self, other) -> bool:
         return not (other == self)
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         if self.unit is NO_UNIT and isinstance(other, (int, float, int)):
             return type(other)(self) > other
 
         assert other.unit is self.unit and other.prefix is self.prefix
         return self.amount < other.amount
 
-    def __le__(self, other):
+    def __le__(self, other) -> bool:
         if self.unit is NO_UNIT and isinstance(other, (int, float, int)):
             return type(other)(self) <= other
 
         assert other.unit is self.unit and other.prefix is self.prefix
         return self.amount <= other.amount
 
-    def __gt__(self, other):
+    def __gt__(self, other) -> bool:
         if self.unit is NO_UNIT and isinstance(other, (int, float, int)):
             return type(other)(self) > other
 
         assert other.unit is self.unit and other.prefix is self.prefix
         return self.amount > other.amount
 
-    def __ge__(self, other):
+    def __ge__(self, other) -> bool:
         if self.unit is NO_UNIT and isinstance(other, (int, float, int)):
             return type(other)(self) >= other
 
         assert other.unit is self.unit and other.prefix is self.prefix
         return self.amount >= other.amount
 
-    def convert(self, unit):
+    def convert(self, unit) -> 'Quantity':
         return Quantity(self.unit.convert(unit, float(self)), unit)
 
-    def to(self, prefix):
-        u"""
+    def to(self, prefix: Union[Prefix, str]) -> Optional[float]:
+        """
         Convert to different prefix (i.e. seconds to ms) with no units e.g.
 
         >>> q = Quantity(1, 'km')
