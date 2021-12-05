@@ -18,7 +18,7 @@ class TestQuantityConfigParser(unittest.TestCase):
             qcp.read_file(fp)
             self.qcp = qcp
 
-    def testGetInt(self):
+    def get_getint(self):
         """
         Test Integer Fetching
         """
@@ -28,7 +28,7 @@ class TestQuantityConfigParser(unittest.TestCase):
         v = self.qcp.getint('Ints', 'value2')
         assert int(v.amount) == 50, int(v)
 
-    def testGetFloat(self):
+    def test_getfloat(self):
         """
         Test Float Fetching
         """
@@ -45,7 +45,7 @@ class TestQuantityConfigParser(unittest.TestCase):
         v = self.qcp.getfloat('Floats', 'value2')
         assert round(abs(0.35 - v.amount), 2) == 0
 
-    def testGetNoQualifier(self):
+    def test_get_no_qualifier(self):
         """
         Testing items with no qualifiers
         """
@@ -55,7 +55,7 @@ class TestQuantityConfigParser(unittest.TestCase):
         v = self.qcp.getint('NoUnits', 'value2')
         assert v == 0, (v,)
 
-    def testGetHex(self):
+    def test_gethex(self):
         """
         Test Hex Fetching
         """
