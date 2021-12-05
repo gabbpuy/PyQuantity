@@ -22,11 +22,9 @@ Power = (I^2)R = R(I^2)
 Ohm * Ampere * Ampere -> Volt * Ampere -> Watt
 Ampere * (Ampere * Ohm) -> Ampere * Volt -> Watt
 """
-__author__ = 'akm'
-
 import operator
 
-from .unit import NoUnit, Unit, get_all_conversions, get_all_divided_units, get_all_combined_units
+from .unit import Unit, get_all_conversions, get_all_divided_units, get_all_combined_units
 
 # SI Base units
 metre = Unit('m', "metre")  # : SI metre

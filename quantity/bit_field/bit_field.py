@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
+from typing import Union
 """
 Numbers as BitField, this class is useful on its own, it is very useful as a superclass.
 
 >>> class MyField(BitField):
 >>>     @property
->>>     def subField(self):
+>>>     def sub_field(self):
 >>>         return self[2:5]
->>>     @subField.setter
->>>     def subField(self, value):
+>>>     @sub_field.setter
+>>>     def sub_field(self, value):
 >>>         self[2:5] = value
 >>> x = MyField(0x14)
->>> x.subField
+>>> x.sub_field
 5
->>> x.subField = 7
->>> x.subField
+>>> x.sub_field = 7
+>>> x.sub_field
 7
 >>> hex(int(x))
 0x1c
 """
-__author__ = "akm"
 
 
 class BitField:
@@ -39,7 +39,7 @@ class BitField:
     def __init__(self, value: int = 0):
         self.__value = value
 
-    def __getitem__(self, index: int) -> int:
+    def __getitem__(self, index: Union[int, slice]) -> int:
         """
         Get a single bit, 0 indexed
 
@@ -49,7 +49,7 @@ class BitField:
             return self.__getslice__(index)
         return (self.__value >> index) & 1
 
-    def __setitem__(self, index: int, value: int):
+    def __setitem__(self, index: Union[int, slice], value: int):
         """
         Set a single bit, 0 indexed
 

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-__author__ = 'akm'
-
 from typing import Union
 
 """
@@ -94,8 +92,8 @@ class Prefix(metaclass=MetaPrefix):
         elif power < 100:
             t, u = divmod(power, 10)
             return f'10{pPrefix}{self.supers[t]}{self.supers[u]}'
-        else:
-            return f'10^{pPrefix}{power}'
+
+        return f'10^{pPrefix}{power}'
 
     def __repr__(self) -> str:
         """
@@ -104,9 +102,6 @@ class Prefix(metaclass=MetaPrefix):
         return self.fmt
 
     def __str__(self) -> str:
-        """
-        Ascii version
-        """
         return f'{self.prefix}'
 
     def __rmul__(self, o) -> Union[int, float]:

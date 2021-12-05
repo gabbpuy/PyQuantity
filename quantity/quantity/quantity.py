@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
-__author__ = "akm"
 from typing import Union, Optional
 
-from quantity.unit.unit import Unit, get_unit, has_unit
-from quantity.prefix.prefix import closest_prefix, has_prefix, get_prefix, Prefix
+from quantity.unit import Unit, get_unit, has_unit, NoUnit
+from quantity.prefix import closest_prefix, has_prefix, get_prefix, Prefix
 import quantity.prefix.prefixes as prefixes
-import quantity.unit.units as units
-
-NO_UNIT = units.NoUnit
 
 
 class Quantity:
@@ -45,7 +41,7 @@ class Quantity:
     :param prefix: A SI power prefix to be applied to the amount.
     """
 
-    def __init__(self, amount, unit: Union[Unit, str] = NO_UNIT, prefix: Prefix = prefixes.NoPrefix):
+    def __init__(self, amount, unit: Union[Unit, str] = NoUnit, prefix: Prefix = prefixes.NoPrefix):
         self.amount = amount
         self.unit = unit
         self.prefix = prefix
@@ -61,7 +57,7 @@ class Quantity:
         if isinstance(o, (int, float)) and o == 0:
             return self
 
-        if self.unit is NO_UNIT and isinstance(o, (int, float)):
+        if self.unit is NoUnit and isinstance(o, (int, float)):
             return Quantity(type(o)(self) + o)
 
         unit = self.unit + o.unit
@@ -70,7 +66,7 @@ class Quantity:
     __radd__ = __add__
 
     def __sub__(self, o) -> 'Quantity':
-        if self.unit is NO_UNIT and isinstance(o, (int, float)):
+        if self.unit is NoUnit and isinstance(o, (int, float)):
             return Quantity(type(o)(self) - o)
 
         unit = self.unit - o.unit
@@ -107,7 +103,7 @@ class Quantity:
         """
         Remove our unit type
         """
-        self.unit = NO_UNIT
+        self.unit = NoUnit
 
     def __find_unit(self):
         """
@@ -117,7 +113,7 @@ class Quantity:
         :return: :mod:`Unit` object
         """
         if not self.unit:
-            return NO_UNIT
+            return NoUnit
 
         if isinstance(self.unit, Unit):
             return self.unit
@@ -163,7 +159,7 @@ class Quantity:
 
         Otherwise everything else has to match
         """
-        if self.unit is NO_UNIT and isinstance(other, (int, float, int)):
+        if self.unit is NoUnit and isinstance(other, (int, float, int)):
             return type(other)(self) == other
 
         return (other.amount == self.amount and
@@ -174,28 +170,28 @@ class Quantity:
         return not (other == self)
 
     def __lt__(self, other) -> bool:
-        if self.unit is NO_UNIT and isinstance(other, (int, float, int)):
+        if self.unit is NoUnit and isinstance(other, (int, float, int)):
             return type(other)(self) > other
 
         assert other.unit is self.unit and other.prefix is self.prefix
         return self.amount < other.amount
 
     def __le__(self, other) -> bool:
-        if self.unit is NO_UNIT and isinstance(other, (int, float, int)):
+        if self.unit is NoUnit and isinstance(other, (int, float, int)):
             return type(other)(self) <= other
 
         assert other.unit is self.unit and other.prefix is self.prefix
         return self.amount <= other.amount
 
     def __gt__(self, other) -> bool:
-        if self.unit is NO_UNIT and isinstance(other, (int, float, int)):
+        if self.unit is NoUnit and isinstance(other, (int, float, int)):
             return type(other)(self) > other
 
         assert other.unit is self.unit and other.prefix is self.prefix
         return self.amount > other.amount
 
     def __ge__(self, other) -> bool:
-        if self.unit is NO_UNIT and isinstance(other, (int, float, int)):
+        if self.unit is NoUnit and isinstance(other, (int, float, int)):
             return type(other)(self) >= other
 
         assert other.unit is self.unit and other.prefix is self.prefix

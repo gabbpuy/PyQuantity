@@ -7,9 +7,9 @@ from typing import Union
 
 
 class MetaUnit(type):
-    unitIndex = {}
-    combinedUnits = {}
-    dividedUnits = {}
+    unit_index = {}
+    combined_units = {}
+    divided_units = {}
     conversions = {}
 
     def __call__(cls, *args, **kwargs):
@@ -18,8 +18,8 @@ class MetaUnit(type):
         """
         obj = super(MetaUnit, cls).__call__(*args, **kwargs)
         if not ('temp' in kwargs and kwargs.get('temp')) or (len(args) == 3 and not args[-1]):
-            MetaUnit.unitIndex[obj.unit] = obj
-            MetaUnit.unitIndex[obj.name] = obj
+            MetaUnit.unit_index[obj.unit] = obj
+            MetaUnit.unit_index[obj.name] = obj
         return obj
 
 
@@ -32,12 +32,12 @@ class Unit(metaclass=MetaUnit):
     :param temp: Is this a temporary unit (created when combining units)
     """
 
-    xNames = ('', '', 'square ', 'cubic ', 'quartic')
+    x_names = ('', '', 'square ', 'cubic ', 'quartic', 'quintic', 'sextic', 'septic', 'octic', 'nonic', 'decic')
 
     # Unicode superscripts for powers , 0, 1, 2, 3, 4, 5 etc..
     supers = ('⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹')
 
-    __slots__ = ('unit', 'name', '_unit', 'index', 'xName')
+    __slots__ = ('unit', 'name', '_unit', 'index', 'x_name')
 
     # temp is parsed by the meta class...
     def __init__(self, unit: str, name: str, temp: bool = False):
@@ -45,7 +45,7 @@ class Unit(metaclass=MetaUnit):
         self._unit = unit
         self.name = name
         self.index = 1
-        self.xName = ''
+        self.x_name = ''
 
     def __add__(self, o):
         assert o is self
@@ -144,13 +144,13 @@ class Unit(metaclass=MetaUnit):
         """
         Our unit changed to have an exponent, update our representation
         """
-        if 1 <= self.index <= 4:
-            self.xName = self.xNames[self.index]
+        if 1 <= self.index <= len(self.x_names):
+            self.x_name = self.x_names[self.index]
         else:
-            self.xName = f'{self.index}th '
+            self.x_name = f'{self.index}th '
 
     def __repr__(self) -> str:
-        return f'{self.xName}{self.name}'
+        return f'{self.x_name}{self.name}'
 
     def __str__(self) -> str:
         return self.unit
@@ -182,7 +182,7 @@ def get_units() -> tuple:
     Get all the units
     :return:
     """
-    return tuple(MetaUnit.unitIndex.keys())
+    return tuple(MetaUnit.unit_index.keys())
 
 
 def get_all_conversions() -> dict:
@@ -190,19 +190,19 @@ def get_all_conversions() -> dict:
 
 
 def get_all_divided_units() -> dict:
-    return MetaUnit.dividedUnits
+    return MetaUnit.divided_units
 
 
 def get_all_combined_units() -> dict:
-    return MetaUnit.combinedUnits
+    return MetaUnit.combined_units
 
 
 def get_unit(unitName) -> Unit:
-    return MetaUnit.unitIndex[unitName]
+    return MetaUnit.unit_index[unitName]
 
 
 def get_combined_unit(unit) -> Unit:
-    return MetaUnit.combinedUnits[unit]
+    return MetaUnit.combined_units[unit]
 
 
 def get_conversion(units):
@@ -210,15 +210,15 @@ def get_conversion(units):
 
 
 def get_divided_unit(unit) -> Unit:
-    return MetaUnit.dividedUnits[unit]
+    return MetaUnit.divided_units[unit]
 
 
 def has_unit(unit_id: str) -> bool:
-    return unit_id in MetaUnit.unitIndex
+    return unit_id in MetaUnit.unit_index
 
 
 def has_combined_unit(unit_id) -> bool:
-    return unit_id in MetaUnit.combinedUnits
+    return unit_id in MetaUnit.combined_units
 
 
 def has_conversion(units) -> bool:
@@ -226,4 +226,4 @@ def has_conversion(units) -> bool:
 
 
 def has_divided_unit(units) -> bool:
-    return units in MetaUnit.dividedUnits
+    return units in MetaUnit.divided_units

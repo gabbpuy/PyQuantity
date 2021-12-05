@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-__author__ = 'akm'
 from .prefix import Prefix
 
 # A flag to remove some of the prefixes we don't like to use

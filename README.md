@@ -48,12 +48,12 @@ You can define your own units. We can get frames per second by defining frames.
 
 ```python
 from quantity.unit import Unit
-from quantity.quantity.quantity import Quantity
+from quantity.quantity import Quantity
 
 frame = Unit('f', "frame")
 frames = Quantity(432000, "frame")
-runningTime = Quantity(120 * 60, 's')
-fps = frames / runningTime
+running_time = Quantity(120 * 60, 's')
+fps = frames / running_time
 print(fps)
 '60.0 f/s'
 ```
