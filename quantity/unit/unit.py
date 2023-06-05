@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import annotations
+
 """
 A class representing a unit of measure. Similar units can be added or subtracted, while any two units can be multiplied
 or divided. There are some lookups for units that can be derived from multiplying or dividing two units.
 """
-from typing import Union
 
 
 class MetaUnit(type):
@@ -58,7 +59,7 @@ class Unit(metaclass=MetaUnit):
     # XXX mul and div need a new MultiUnit class that takes care of this
     # and can deal with m/s/s actually being m/s² or ms-²
 
-    def __mul__(self, o: 'Unit') -> 'Unit':
+    def __mul__(self, o: Unit) -> Unit:
         """
         Multiple two units
         """
@@ -82,7 +83,7 @@ class Unit(metaclass=MetaUnit):
                 unit._up()
         return unit
 
-    def __truediv__(self, o: 'Unit') -> 'Unit':
+    def __truediv__(self, o: Unit) -> Unit:
         """
         Divide two units
         """
@@ -155,7 +156,7 @@ class Unit(metaclass=MetaUnit):
     def __str__(self) -> str:
         return self.unit
 
-    def convert(self, to: 'Unit', value: Union[float, int]) -> Union[float, int]:
+    def convert(self, to: 'Unit', value: float | int) -> float | int:
         """
         Convert from this to another unit
 

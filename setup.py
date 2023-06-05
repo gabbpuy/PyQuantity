@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='PyQuantity',
-    version='1.1',
+    version='1.2',
     packages=['', 'quantity'],
     package_dir={'': 'quantity'},
     url='',

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from typing import Union
-
+from __future__ import annotations
+import math
 """
 Unit prefix library for units for powers of 10. Handles multiplication and division and
 returns super scripts for attaching to displays.
 """
-import math
+
 
 
 class MetaPrefix(type):
@@ -17,42 +17,6 @@ class MetaPrefix(type):
         MetaPrefix.power_index[obj.power] = obj
         MetaPrefix.prefix_index[obj.prefix] = obj
         return obj
-
-
-def has_prefix(prefix: str) -> bool:
-    """
-    Is the prefix in the cache?
-    :param prefix: Prefix
-    :return: presence of prefix
-    """
-    return prefix in MetaPrefix.prefix_index
-
-
-def has_power(power: int) -> bool:
-    """
-    Is this power in the cache?
-    :param power: Power
-    :return: presence of power
-    """
-    return power in MetaPrefix.power_index
-
-
-def get_power(power: int) -> int:
-    """
-    Get the cached power index
-    :param power:
-    :return: Cached Power
-    """
-    return MetaPrefix.power_index[power]
-
-
-def get_prefix(prefix: str) -> 'Prefix':
-    """
-    Get the cached prefix object
-    :param prefix: prefix
-    :return: Cached prefix
-    """
-    return MetaPrefix.prefix_index[prefix]
 
 
 class Prefix(metaclass=MetaPrefix):
@@ -104,21 +68,21 @@ class Prefix(metaclass=MetaPrefix):
     def __str__(self) -> str:
         return f'{self.prefix}'
 
-    def __rmul__(self, o) -> Union[int, float]:
+    def __rmul__(self, o) -> int | float:
         """
         Return a scalar multiplied by us.
         e.g. 5 * kilo returns 5000
         """
         return o * (10 ** self.power)
 
-    def __mul__(self, o) -> Union[int, float]:
+    def __mul__(self, o) -> int | float:
         """
         Return a scalar multiplied by us.
         e.g. 5 * kilo returns 5000
         """
         return o * (10 ** self.power)
 
-    def __rtruediv__(self, o) -> Union[int, float]:
+    def __rtruediv__(self, o) -> int | float:
         """
         Return a scalar divided by us.
         e.g. 5000 / kilo returns 5
@@ -126,7 +90,7 @@ class Prefix(metaclass=MetaPrefix):
         return float(o) / (10 ** self.power)
 
 
-def closest_prefix(i: Union[float, int]) -> tuple:
+def closest_prefix(i: int | float) -> tuple:
     """
     Reduce a number to a multiplier and a prefix.
 
@@ -159,3 +123,40 @@ def closest_prefix(i: Union[float, int]) -> tuple:
             break
     exponent = get_power(i)
     return coefficient * mult, exponent
+
+
+def has_prefix(prefix: str) -> bool:
+    """
+    Is the prefix in the cache?
+    :param prefix: Prefix
+    :return: presence of prefix
+    """
+    return prefix in MetaPrefix.prefix_index
+
+
+def has_power(power: int) -> bool:
+    """
+    Is this power in the cache?
+    :param power: Power
+    :return: presence of power
+    """
+    return power in MetaPrefix.power_index
+
+
+def get_power(power: int) -> int:
+    """
+    Get the cached power index
+    :param power:
+    :return: Cached Power
+    """
+    return MetaPrefix.power_index[power]
+
+
+def get_prefix(prefix: str) -> Prefix:
+    """
+    Get the cached prefix object
+    :param prefix: prefix
+    :return: Cached prefix
+    """
+    return MetaPrefix.prefix_index[prefix]
+

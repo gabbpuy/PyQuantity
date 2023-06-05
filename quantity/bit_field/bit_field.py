@@ -1,29 +1,27 @@
 # -*- coding: utf-8 -*-
-from typing import Union
 """
 Numbers as BitField, this class is useful on its own, it is very useful as a superclass.
-
->>> class MyField(BitField):
->>>     @property
->>>     def sub_field(self):
->>>         return self[2:5]
->>>     @sub_field.setter
->>>     def sub_field(self, value):
->>>         self[2:5] = value
->>> x = MyField(0x14)
->>> x.sub_field
-5
->>> x.sub_field = 7
->>> x.sub_field
-7
->>> hex(int(x))
-0x1c
 """
-
 
 class BitField:
     """
     Represents an arbitrary length bit field as a sliceable value
+    
+    >>> class MyField(BitField):
+    >>>     @property
+    >>>     def sub_field(self):
+    >>>         return self[2:5]
+    >>>     @sub_field.setter
+    >>>     def sub_field(self, value):
+    >>>         self[2:5] = value
+    >>> x = MyField(0x14)
+    >>> x.sub_field
+    5
+    >>> x.sub_field = 7
+    >>> x.sub_field
+    7
+    >>> hex(int(x))
+    0x1c
 
     .. Note:
     arbitrary means up to 1280 bits in this case
@@ -39,7 +37,7 @@ class BitField:
     def __init__(self, value: int = 0):
         self.__value = value
 
-    def __getitem__(self, index: Union[int, slice]) -> int:
+    def __getitem__(self, index: int | slice) -> int:
         """
         Get a single bit, 0 indexed
 
@@ -49,7 +47,7 @@ class BitField:
             return self.__getslice__(index)
         return (self.__value >> index) & 1
 
-    def __setitem__(self, index: Union[int, slice], value: int):
+    def __setitem__(self, index: int | slice, value: int):
         """
         Set a single bit, 0 indexed
 
