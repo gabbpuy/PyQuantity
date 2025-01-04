@@ -8,7 +8,7 @@ import quantity.unit.units as units
 
 class TestUnit(unittest.TestCase):
     def test_simple_unit(self):
-        t = Unit('ZZZ', 'TestUnit', temp = True)
+        t = Unit('ZZZ', 'TestUnit', temp=True)
         assert not has_unit('ZZZ')
 
         t = Unit('ZZZ', 'TestUnit', False)

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 import math
+
 """
 Unit prefix library for units for powers of 10. Handles multiplication and division and
 returns super scripts for attaching to displays.
 """
-
 
 
 class MetaPrefix(type):
@@ -13,7 +13,7 @@ class MetaPrefix(type):
     prefix_index = {}
 
     def __call__(cls, *args, **kwargs):
-        obj = super(MetaPrefix, cls).__call__(*args, **kwargs)
+        obj = super().__call__(*args, **kwargs)
         MetaPrefix.power_index[obj.power] = obj
         MetaPrefix.prefix_index[obj.prefix] = obj
         return obj
@@ -159,4 +159,3 @@ def get_prefix(prefix: str) -> Prefix:
     :return: Cached prefix
     """
     return MetaPrefix.prefix_index[prefix]
-

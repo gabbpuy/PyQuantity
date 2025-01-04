@@ -3,6 +3,7 @@
 Numbers as BitField, this class is useful on its own, it is very useful as a superclass.
 """
 
+
 class BitField:
     """
     Represents an arbitrary length bit field as a sliceable value

@@ -140,7 +140,7 @@ class Quantity:
                 unit = Unit(u, u, temp=True)
             return unit
 
-        # We have left overs... this should be a prefix...
+        # We have leftovers... this should be a prefix...
         ul = ''.join(ul)
         if has_prefix(ul):
             self.amount *= get_prefix(ul)
@@ -152,12 +152,12 @@ class Quantity:
     def __str__(self) -> str:
         return f'{self.amount} {self.prefix}{self.unit}'
 
-    def __eq__(self, other: int | float| Quantity ) -> bool:
+    def __eq__(self, other: int | float | Quantity) -> bool:
         """
         Equivalence checking.
         If we have no unit, then we will compare against scalars.
 
-        Otherwise everything else has to match
+        Otherwise, everything else has to match
         """
         if self.unit is NoUnit and isinstance(other, (int, float)):
             return type(other)(self) == other

@@ -40,7 +40,7 @@ class Unit(metaclass=MetaUnit):
 
     __slots__ = ('unit', 'name', '_unit', 'index', 'x_name')
 
-    # temp is parsed by the meta class...
+    # temp is parsed by the metaclass...
     def __init__(self, unit: str, name: str, temp: bool = False):
         self.unit = unit
         self._unit = unit
@@ -115,18 +115,18 @@ class Unit(metaclass=MetaUnit):
         Increase our exponent
         """
         self.index += 1
-        self._updateName()
-        self._updateUnit()
+        self._update_name()
+        self._update_unit()
 
     def _down(self):
         """
         decrease our exponent
         """
         self.index -= 1
-        self._updateName()
-        self._updateUnit()
+        self._update_name()
+        self._update_unit()
 
-    def _updateUnit(self):
+    def _update_unit(self):
         """
         Our unit changed to have an exponent, update our representation
         """
@@ -141,7 +141,7 @@ class Unit(metaclass=MetaUnit):
         else:
             self.unit = self._unit
 
-    def _updateName(self):
+    def _update_name(self):
         """
         Our unit changed to have an exponent, update our representation
         """
