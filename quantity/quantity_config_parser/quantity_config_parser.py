@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from functools import partial
 from configparser import ConfigParser
-from typing import Union, Callable
+from typing import Union, Callable, override
 
 from quantity.quantity import Quantity
 from quantity.unit import NoUnit
@@ -25,6 +25,7 @@ class QuantityConfigParser(ConfigParser):
         value, unit = self._split_section_item(section, option)
         return self.__quantify(converter, value, unit)
 
+    @override
     def getint(self, section: str, option: str, converter: Callable = int) -> Quantity:
         """
         A convenience method which coerces the option in the specified
@@ -50,6 +51,7 @@ class QuantityConfigParser(ConfigParser):
         """
         return self.get_as(section, option, converter)
 
+    @override
     def getfloat(self, section: str, option: str, converter: Callable = float) -> Quantity:
         """
         A convenience method which coerces the option in the specified

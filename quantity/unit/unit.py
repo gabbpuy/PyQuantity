@@ -156,7 +156,7 @@ class Unit(metaclass=MetaUnit):
     def __str__(self) -> str:
         return self.unit
 
-    def convert(self, to: 'Unit', value: float | int) -> float | int:
+    def convert(self, to: Unit, value: float | int) -> float | int:
         """
         Convert from this to another unit
 

@@ -60,6 +60,7 @@ class BitField:
         value = (value & 1) << index
         mask = ~(1 << index)
         self.__value = (self.__value & mask) | value
+        return None
 
     def __getslice__(self, start_end: slice) -> int:
         """
